@@ -2,11 +2,16 @@ import { Form, useFormik } from "formik";
 import React from "react";
 import { FileParser } from "../utilis/FileParser";
 import * as Yup from "yup";
-
+import { useDispatch } from "react-redux";
+import { loggedUserAction } from "../store/userSlice";
+import { useNavigate } from "react-router-dom";
 function FormComponent() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
+
   //validacija image
   //type
-  const VALID_TYPE = ["image/png", "image.jpg", "image.jpeg"];
+  const VALID_TYPE = ["image/png", "image.jpeg"];
   //size
   const KB = 1024;
   const MB = KB * 1024;
@@ -25,24 +30,24 @@ function FormComponent() {
     // validacija yup
     validationSchema: Yup.object({
       firstName: Yup.string().required("Filed is required"),
-      lastName:Yup.string().required('Field is required'),
-      email: Yup.string().email('Invalid Email').required('Field is required'),
-      password:Yup.string().min(4).required('Field is required'),
-      gender:Yup.string().required('Filed is required'),
-      birthday:Yup.string().required('Filed is required'),
-      image:Yup.mixed()
-      .required('Image is required')
-      .test('fileSize','Wrong file size',(value)=>value.size<MB*2)
-      .test('fileType','Wrong file type',(value)=>VALID_TYPE.includes(value.type))
-
+      lastName: Yup.string().required("Field is required"),
+      email: Yup.string().email("Invalid Email").required("Field is required"),
+      password: Yup.string().min(4).required("Field is required"),
+      gender: Yup.string().required("Filed is required"),
+      birthday: Yup.string().required("Filed is required"),
+      image: Yup.mixed()
+        .required("Image is required")
+        .test("fileSize", "Wrong file size", (value) => value.size < MB * 2)
+        .test("fileType", "Wrong file type", (value) =>
+          VALID_TYPE.includes(value.type)
+        ),
     }),
     //onSubmit
     onSubmit: (values) => {
-      console.log(values);
       FileParser(values.image)
         .then((res) => {
-            console.log({...values,image:res});
-            
+          dispatch(loggedUserAction({ ...values, image: res }));
+          navigate('/')
         })
         .catch((err) => {
           console.log(err);
@@ -57,13 +62,15 @@ function FormComponent() {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="bg-slate-300 p-5 rounded-lg my-5 flex flex-col gap-2 w-[500px]"
+      className="bg-slate-300 p-5 rounded-lg my-5 flex flex-col gap-2 w-full md:w-[500px] h-[80%] md:mx-auto"
     >
       {/* firstName */}
       <div className="flex flex-col gap-1">
         <label htmlFor="firstName" className="text-[14px] text-gray-600">
-          FirstName 
-          <span className="text-[12px] ml-2 text-red-500">{showError("firstName")}</span>
+          FirstName
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("firstName")}
+          </span>
         </label>
         <input
           type="text"
@@ -77,8 +84,11 @@ function FormComponent() {
       </div>
       {/* lastName */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="lastName">LastName
-        <span className="text-[12px] ml-2 text-red-500">{showError("lastName")}</span>
+        <label htmlFor="lastName">
+          LastName
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("lastName")}
+          </span>
         </label>
         <input
           type="text"
@@ -92,8 +102,11 @@ function FormComponent() {
       </div>
       {/* email */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="email">Email
-        <span className="text-[12px] ml-2 text-red-500">{showError("email")}</span>
+        <label htmlFor="email">
+          Email
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("email")}
+          </span>
         </label>
         <input
           type="email"
@@ -107,8 +120,11 @@ function FormComponent() {
       </div>
       {/* password */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="password">Pasword
-        <span className="text-[12px] ml-2 text-red-500">{showError("password")}</span>
+        <label htmlFor="password">
+          Pasword
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("password")}
+          </span>
         </label>
         <input
           type="password"
@@ -122,8 +138,11 @@ function FormComponent() {
       </div>
       {/* gender */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="gender">Gender
-        <span className="text-[12px] ml-2 text-red-500">{showError("gender")}</span>
+        <label htmlFor="gender">
+          Gender
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("gender")}
+          </span>
         </label>
         <select
           name="gender"
@@ -141,8 +160,11 @@ function FormComponent() {
       </div>
       {/* image */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="image">Image
-        <span className="text-[12px] ml-2 text-red-500">{showError("image")}</span>
+        <label htmlFor="image">
+          Image
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("image")}
+          </span>
         </label>
         <input
           type="file"
@@ -156,8 +178,11 @@ function FormComponent() {
       </div>
       {/* birthday */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="birthday">Birthday
-        <span className="text-[12px] ml-2 text-red-500">{showError("birthday")}</span>
+        <label htmlFor="birthday">
+          Birthday
+          <span className="text-[12px] ml-2 text-red-500">
+            {showError("birthday")}
+          </span>
         </label>
         <input
           type="date"
@@ -175,6 +200,7 @@ function FormComponent() {
       >
         Register me
       </button>
+      <p>Ucitaj ponovo stranicu nakon sto pritisnes dugme pa potom idite na profile stranicu</p>
     </form>
   );
 }
